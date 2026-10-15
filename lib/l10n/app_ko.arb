@@ -3939,5 +3939,33 @@
   "accountsRemoveAddressMessage": "Conduit이 더 이상 이 주소를 시도하지 않습니다. 계정은 로그인 상태로 유지됩니다.",
   "accountsAddressConfirmTitle": "이 주소를 확인할까요?",
   "accountsAddressConfirmMessage": "{host}이(가) 이 서버인지 확인하기 위해 Conduit이 이 기기에 저장된 계정의 세션을 해당 주소로 보냅니다. 이 주소를 신뢰하는 경우에만 계속하세요.",
-  "accountsAddressConfirmAction": "주소 확인"
+  "accountsAddressConfirmAction": "주소 확인",
+  "chatSwitcherReady": "탭하거나 길게 누르세요",
+  "@chatSwitcherReady": {
+    "description": "Idle hint above the floating new-chat and recent-chat switcher button."
+  },
+  "chatSwitcherPress": "계속 누르세요…",
+  "@chatSwitcherPress": {
+    "description": "Hint while pressing the chat switcher before a long press is recognized."
+  },
+  "chatSwitcherHold": "채팅으로 슬라이드",
+  "@chatSwitcherHold": {
+    "description": "Hint after holding the chat switcher; sliding selects a recent chat."
+  },
+  "chatSwitcherRelease": "손을 떼어 열기",
+  "@chatSwitcherRelease": {
+    "description": "Hint when releasing the held chat switcher will open the highlighted chat."
+  },
+  "chatSwitcherCancel": "손을 떼어 취소",
+  "@chatSwitcherCancel": {
+    "description": "Hint when releasing the held chat switcher will cancel without changing chats."
+  },
+  "chatSwitcherCancelled": "취소됨",
+  "@chatSwitcherCancelled": {
+    "description": "Brief confirmation after cancelling the chat-switcher gesture."
+  },
+  "chatSwitcherHint": "탭하여 새 채팅을 시작하세요. 길게 누른 채 슬라이드하여 채팅을 전환하세요.",
+  "@chatSwitcherHint": {
+    "description": "Accessibility hint for the floating button: tap creates a chat, hold and slide switches chats."
+  }
 }

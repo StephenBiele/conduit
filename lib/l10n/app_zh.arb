@@ -4167,5 +4167,33 @@
   "accountsRemoveAddressMessage": "Conduit 将不再尝试此地址。你的账户将保持登录状态。",
   "accountsAddressConfirmTitle": "要检查此地址吗？",
   "accountsAddressConfirmMessage": "为确认 {host} 就是这台服务器，Conduit 会向它发送此设备上已保存账户的会话。仅在你信任此地址时继续。",
-  "accountsAddressConfirmAction": "检查地址"
+  "accountsAddressConfirmAction": "检查地址",
+  "chatSwitcherReady": "轻点或按住",
+  "@chatSwitcherReady": {
+    "description": "Idle hint above the floating new-chat and recent-chat switcher button."
+  },
+  "chatSwitcherPress": "继续按住…",
+  "@chatSwitcherPress": {
+    "description": "Hint while pressing the chat switcher before a long press is recognized."
+  },
+  "chatSwitcherHold": "滑动选择聊天",
+  "@chatSwitcherHold": {
+    "description": "Hint after holding the chat switcher; sliding selects a recent chat."
+  },
+  "chatSwitcherRelease": "松开以打开",
+  "@chatSwitcherRelease": {
+    "description": "Hint when releasing the held chat switcher will open the highlighted chat."
+  },
+  "chatSwitcherCancel": "松开以取消",
+  "@chatSwitcherCancel": {
+    "description": "Hint when releasing the held chat switcher will cancel without changing chats."
+  },
+  "chatSwitcherCancelled": "已取消",
+  "@chatSwitcherCancelled": {
+    "description": "Brief confirmation after cancelling the chat-switcher gesture."
+  },
+  "chatSwitcherHint": "轻点以新建聊天。按住并滑动以切换聊天。",
+  "@chatSwitcherHint": {
+    "description": "Accessibility hint for the floating button: tap creates a chat, hold and slide switches chats."
+  }
 }

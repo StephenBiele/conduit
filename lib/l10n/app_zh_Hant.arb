@@ -4167,5 +4167,33 @@
   "accountsRemoveAddressMessage": "Conduit 將不再嘗試此位址。你的帳戶會保持登入狀態。",
   "accountsAddressConfirmTitle": "要檢查此位址嗎？",
   "accountsAddressConfirmMessage": "為確認 {host} 就是這台伺服器，Conduit 會將此裝置上已儲存帳戶的工作階段傳送給它。僅在你信任此位址時繼續。",
-  "accountsAddressConfirmAction": "檢查位址"
+  "accountsAddressConfirmAction": "檢查位址",
+  "chatSwitcherReady": "輕點或按住",
+  "@chatSwitcherReady": {
+    "description": "Idle hint above the floating new-chat and recent-chat switcher button."
+  },
+  "chatSwitcherPress": "繼續按住…",
+  "@chatSwitcherPress": {
+    "description": "Hint while pressing the chat switcher before a long press is recognized."
+  },
+  "chatSwitcherHold": "滑動選擇聊天",
+  "@chatSwitcherHold": {
+    "description": "Hint after holding the chat switcher; sliding selects a recent chat."
+  },
+  "chatSwitcherRelease": "放開以開啟",
+  "@chatSwitcherRelease": {
+    "description": "Hint when releasing the held chat switcher will open the highlighted chat."
+  },
+  "chatSwitcherCancel": "放開以取消",
+  "@chatSwitcherCancel": {
+    "description": "Hint when releasing the held chat switcher will cancel without changing chats."
+  },
+  "chatSwitcherCancelled": "已取消",
+  "@chatSwitcherCancelled": {
+    "description": "Brief confirmation after cancelling the chat-switcher gesture."
+  },
+  "chatSwitcherHint": "輕點以新增聊天。按住並滑動以切換聊天。",
+  "@chatSwitcherHint": {
+    "description": "Accessibility hint for the floating button: tap creates a chat, hold and slide switches chats."
+  }
 }

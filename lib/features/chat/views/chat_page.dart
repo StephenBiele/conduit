@@ -79,6 +79,9 @@ import 'package:conduit_markdown/conduit_markdown.dart';
 
 import '../../../platform/android_assistant_handler.dart';
 import '../widgets/chat_branch_actions.dart';
+import '../../navigation/providers/conversation_selection_provider.dart';
+import '../../../shared/services/navigation_service.dart';
+import '../../../shared/services/user_friendly_error_handler.dart';
 import '../widgets/chat_export_sheet.dart';
 import '../widgets/chat_comparison_widgets.dart';
 import '../widgets/model_selector_sheet.dart';
@@ -494,6 +497,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   bool _hasUserScrolled = false;
   bool _isDeactivated = false;
   double _inputHeight = 0;
+  final _chatSwitcherKey = GlobalKey<ChatQuickSwitcherState>();
   bool _didStartupFocus = false; // one-time auto-focus on startup
   String? _lastConversationId;
   int _conversationOwnerGeneration = 0;
@@ -1876,6 +1880,34 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         _showScrollToBottom = false;
       });
     }
+  }
+
+  Future<void> _selectQuickChat(ChatSwitcherChat chat) async {
+    final conversations = ref.read(conversationsProvider).asData?.value;
+    final conversation = conversations
+        ?.where(
+          (item) => !item.archived && conversationScopedId(item) == chat.id,
+        )
+        .firstOrNull;
+    if (conversation == null) return;
+    final routeRevision = NavigationService.currentRouteRevision;
+    _dismissComposerFocus();
+    final result = await ref
+        .read(conversationSelectionProvider.notifier)
+        .select(conversation);
+    if (!mounted ||
+        routeRevision != NavigationService.currentRouteRevision ||
+        result.disposition != ConversationSelectionDisposition.failed ||
+        result.error == null) {
+      return;
+    }
+    UserFriendlyErrorHandler().showErrorSnackbar(
+      context,
+      result.error,
+      onRetry: () {
+        if (mounted) unawaited(_selectQuickChat(chat));
+      },
+    );
   }
 
   void _dismissComposerFocus() {
@@ -4045,6 +4077,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (didPop) return;
+        if (_chatSwitcherKey.currentState?.dismiss() ?? false) return;
 
         // First, if any input has focus, clear focus and consume back press.
         // Also covers native platform inputs which don't participate in
@@ -4182,6 +4215,54 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 right: 0,
                 bottom: 0,
                 child: _buildComposerSection(context),
+              ),
+              Positioned.fill(
+                child: ThemedSheets.hideNativeChromeWhileCovered(
+                  child: Consumer(
+                    builder: (context, switcherRef, _) {
+                      final recent = [
+                        ...?switcherRef
+                            .watch(conversationsProvider)
+                            .asData
+                            ?.value,
+                      ]..removeWhere((chat) => chat.archived);
+                      recent.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+                      return ChatQuickSwitcher(
+                        key: _chatSwitcherKey,
+                        scope: (
+                          switcherRef.watch(openWebUiAuthSessionEpochProvider),
+                          switcherRef
+                              .watch(activeServerProvider)
+                              .asData
+                              ?.value
+                              ?.id,
+                        ),
+                        chats: [
+                          for (final chat in recent.take(6))
+                            ChatSwitcherChat(
+                              id: conversationScopedId(chat),
+                              title: chat.title,
+                            ),
+                        ],
+                        bottomOffset:
+                            math.max(
+                              _inputHeight,
+                              MediaQuery.viewPaddingOf(context).bottom + 72,
+                            ) +
+                            Spacing.md,
+                        enabled:
+                            !switcherRef.watch(isLoadingConversationProvider) &&
+                            !switcherRef.watch(
+                              chatVoiceModeControllerProvider.select(
+                                (voice) => voice.isActive,
+                              ),
+                            ),
+                        onNewChat: _handleNewChat,
+                        onSelected: (chat) => unawaited(_selectQuickChat(chat)),
+                      );
+                    },
+                  ),
+                ),
               ),
               ChatVoiceModeOverlay(bottomOffset: _inputHeight),
             ],
