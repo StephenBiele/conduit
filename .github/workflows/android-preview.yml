@@ -1,0 +1,91 @@
+name: Android preview APK
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: android-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and publish installable APKs
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.1'
+          cache: true
+
+      - name: Fetch rendering dependencies
+        run: git submodule update --init --recursive --depth 1 third_party/katex third_party/mermaid
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate app code
+        run: dart run build_runner build
+
+      - name: Generate shared code
+        working-directory: packages/conduit_core
+        run: dart run build_runner build
+
+      # Debug signing makes these APKs installable without production keys.
+      # The existing .debug app ID lets this preview coexist with the store app.
+      - name: Build installable test APKs
+        run: flutter build apk --debug --split-per-abi --target-platform android-arm,android-arm64
+
+      - name: Prepare downloads
+        run: |
+          mkdir -p apk-downloads
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk apk-downloads/conduit-arm64-v8a-debug.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk apk-downloads/conduit-armeabi-v7a-debug.apk
+          cd apk-downloads
+          sha256sum *.apk > SHA256SUMS
+
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: conduit-android-preview
+          path: apk-downloads/
+          retention-days: 14
+
+      - name: Publish GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cat > /tmp/conduit-preview-notes.md <<'NOTES'
+          Installable Android preview of Conduit's floating chat switcher.
+
+          - Tap + to start a new chat; hold and slide to switch recent chats.
+          - Slide back to + or outward toward the screen edge to cancel.
+          - Wider bottom-chat selection area, subtle native haptics, and clear press, hold, and cancel animations.
+
+          Download conduit-arm64-v8a-debug.apk for most Android phones. The armeabi-v7a APK is available for older 32-bit devices.
+
+          This is a debug-signed test build with a separate app ID. It installs alongside the store version and has its own settings and sign-in.
+          NOTES
+          gh release create "thumb-chat-preview-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            apk-downloads/*.apk apk-downloads/SHA256SUMS \
+            --target "$GITHUB_SHA" \
+            --title "Conduit thumb chat switcher preview" \
+            --prerelease --latest=false \
+            --notes-file /tmp/conduit-preview-notes.md
