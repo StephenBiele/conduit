@@ -8,6 +8,9 @@ plugins {
 }
 
 val keystoreProperties = Properties()
+// Preview APKs use release optimizations with their own update/signing identity.
+val isConduitPreview = providers.gradleProperty("conduitPreview")
+    .map { it.toBoolean() }.getOrElse(false)
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -24,6 +27,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["appLabel"] = "Conduit"
         // Flutter adds x86_64 by default for non-split builds. Ship only ARM ABIs.
         // Split builds set their ABIs through --target-platform instead.
         if (providers.gradleProperty("split-per-abi").orNull != "true") {
@@ -55,6 +59,11 @@ android {
 
     buildTypes {
         getByName("release") {
+            if (isConduitPreview) {
+                applicationIdSuffix = ".preview"
+                versionNameSuffix = "-preview"
+                manifestPlaceholders["appLabel"] = "Conduit Preview"
+            }
             if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }

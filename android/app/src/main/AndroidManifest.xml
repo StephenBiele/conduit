@@ -51,7 +51,7 @@
          ForegroundServiceDidNotStartInTimeException. This ensures channels exist before
          any foreground service attempts to use them. -->
     <application
-        android:label="Conduit"
+        android:label="${appLabel}"
         android:name=".ConduitApplication"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
