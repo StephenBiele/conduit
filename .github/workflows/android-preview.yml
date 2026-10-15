@@ -99,7 +99,7 @@ jobs:
           printf 'Source: %s\nMode: release\nPackage: app.cogwheel.conduit.preview\n' "$GITHUB_SHA" > apk-downloads/BUILD-INFO.txt
           (cd apk-downloads && sha256sum *.apk > SHA256SUMS)
           if [ -z "$PREVIEW_SIGNING" ]; then
-            echo 'Unsigned release artifacts require the persistent cloud preview key before installation. Files are staged in a private draft release; no installable APK was published.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Unsigned release artifacts require the persistent cloud preview key before installation. No APK release was published.' >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Save build artifacts
@@ -110,18 +110,6 @@ jobs:
             apk-downloads/
             preview-tools/
           retention-days: 14
-
-      - name: Stage unsigned files for cloud signing
-        if: env.PREVIEW_SIGNING == ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          gh release create "conduit-preview-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
-            apk-downloads/* preview-tools/apksigner.jar \
-            --target "$GITHUB_SHA" --draft --prerelease --latest=false \
-            --title "Conduit preview awaiting signing" \
-            --notes 'Private staging draft. These APKs are unsigned. Sign and verify with the persistent cloud preview key before publishing.'
 
       - name: Publish verified GitHub prerelease
         if: env.PREVIEW_SIGNING != ''
