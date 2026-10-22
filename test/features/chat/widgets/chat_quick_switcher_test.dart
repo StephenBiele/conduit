@@ -87,6 +87,13 @@ void main() {
 
   testWidgets('tap creates exactly one chat', (tester) async {
     await mount(tester);
+    expect(find.text(_en.chatSwitcherReady), findsNothing);
+    final semantics = tester.widget<Semantics>(
+      find
+          .ancestor(of: find.byKey(_button), matching: find.byType(Semantics))
+          .first,
+    );
+    expect(semantics.properties.hint, _en.chatSwitcherHint);
     await tester.tap(find.byKey(_button));
     await tester.pumpAndSettle();
     expect(created, 1);
@@ -170,7 +177,7 @@ void main() {
         await tester.pump(const Duration(seconds: 1));
         await tester.pumpAndSettle();
         expect(find.byKey(_picker), findsNothing);
-        expect(find.text(_en.chatSwitcherReady), findsOneWidget);
+        expect(find.text(_en.chatSwitcherReady), findsNothing);
       },
     );
   }

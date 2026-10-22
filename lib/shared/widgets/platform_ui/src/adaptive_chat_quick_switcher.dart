@@ -385,47 +385,49 @@ class ChatQuickSwitcherState extends State<ChatQuickSwitcher>
                         ),
                       ),
                     ),
-                  Positioned(
-                    key: const ValueKey('chat-switcher-caption-position'),
-                    left: widget.alignLeft ? 16 : null,
-                    right: widget.alignLeft ? null : 16,
-                    bottom: bottom + 74,
-                    child: Semantics(
-                      liveRegion: true,
-                      child: AnimatedContainer(
-                        duration: context.motionDuration(
-                          const Duration(milliseconds: 130),
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: math.min(260, _size.width - 32),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.surfaceContainer,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: color.withValues(alpha: .2),
+                  if (_phase != _Phase.idle)
+                    Positioned(
+                      key: const ValueKey('chat-switcher-caption-position'),
+                      left: widget.alignLeft ? 16 : null,
+                      right: widget.alignLeft ? null : 16,
+                      bottom: bottom + 74,
+                      child: Semantics(
+                        liveRegion: true,
+                        child: AnimatedContainer(
+                          duration: context.motionDuration(
+                            const Duration(milliseconds: 130),
                           ),
-                        ),
-                        child: Text(
-                          caption,
-                          key: const ValueKey('chat-switcher-caption'),
-                          style: TextStyle(color: color, fontSize: 12),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          constraints: BoxConstraints(
+                            maxWidth: math.min(260, _size.width - 32),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: color.withValues(alpha: .2),
+                            ),
+                          ),
+                          child: Text(
+                            caption,
+                            key: const ValueKey('chat-switcher-caption'),
+                            style: TextStyle(color: color, fontSize: 12),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   Positioned(
                     key: const ValueKey('chat-switcher-fab-position'),
                     left: widget.alignLeft ? 24 : null,
                     right: widget.alignLeft ? null : 24,
                     bottom: bottom,
                     child: Semantics(
+                      container: true,
                       button: true,
                       label: l10n.newChat,
                       hint: l10n.chatSwitcherHint,
